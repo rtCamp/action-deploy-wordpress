@@ -90,8 +90,6 @@ RUN apk update \
 # https://forum.alpinelinux.org/forum/installation/php-iconv-issue
 # https://github.com/gliderlabs/docker-alpine/issues/157#issuecomment-200860301
 
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing gnu-libiconv 
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN rm -rf /var/cache/apk/*
 
 # Set environments
