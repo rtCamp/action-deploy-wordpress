@@ -1,18 +1,34 @@
 #!/usr/bin/env bash
 
-# Check branch filter
-bash /branch.sh
+# Setup hosts file
+hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"
+rsync -av "$hosts_file" /hosts.yml
+cat /hosts.yml
+
+# Check branch
+if [ "$GITHUB_REF" = "" ]; then
+    echo "\$GITHUB_REF is not set"
+    exit 1
+fi
+
+match=0
+for branch in $(cat "$hosts_file" | shyaml keys); do
+    [[ "$GITHUB_REF" = "refs/heads/$branch" ]] && \
+    echo "$GITHUB_REF matches refs/heads/$branch" && \
+    match=1
+done
+
+# Exit neutral if no match found
+if [[ "$match" -eq 0 ]]; then
+    echo "$GITHUB_REF does not match with any given branch in 'hosts.yml'"
+    exit 78
+fi
 
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 export PROJECT_ROOT="$(pwd)"
 export HTDOCS="$HOME/htdocs"
 export GITHUB_BRANCH=${GITHUB_REF##*heads/}
 export CI_SCRIPT_OPTIONS="ci_script_options"
-
-# Setup hosts file
-hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"
-rsync -av "$hosts_file" /hosts.yml
-cat /hosts.yml
 
 # get hostname
 hostname=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.hostname")
