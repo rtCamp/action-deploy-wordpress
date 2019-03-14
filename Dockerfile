@@ -123,9 +123,8 @@ RUN wget https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VER
     rm vault_${VAULT_VERSION}_linux_amd64.zip && \
     mv vault /usr/local/bin/vault
 
-COPY deploy.* /
-COPY entrypoint.sh /
-COPY hosts.yml /
+COPY deploy.php hosts.yml /
+COPY *.sh /
 RUN chmod +x /*.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

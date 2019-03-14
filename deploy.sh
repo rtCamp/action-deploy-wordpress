@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Check branch filter
+bash /branch.sh
+
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 export PROJECT_ROOT="$(pwd)"
 export HTDOCS="$HOME/htdocs"
