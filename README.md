@@ -6,7 +6,7 @@
 
 ## Installation
 
-To use this GitHub Action, you must have access to GitHub Actions. GitHub Actions are currently only available in public beta (you must [apply for access](https://github.com/features/actions)).
+>To use this GitHub Action, you must have access to GitHub Actions. GitHub Actions are currently only available in public beta (you must [apply for access](https://github.com/features/actions)).
 
 You can use this action after any other action to deploy the files of your repo to WordPress site. Here is an example setup of this action:
 
