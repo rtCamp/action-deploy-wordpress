@@ -91,6 +91,17 @@ action "Deploy" {
 }
 ```
 
+## Customize the action
+
+Any file kept inside `.github/deploy` folder of a project's repo which is present in this repo as well will be taken during the build run and respected while running this action.
+
+For example, if you needed something custom in `deploy.php` for some project's deployment here is what you would do:
+
+1. Take a reference of [this deploy.php](https://github.com/rtCamp/action-wordpress-deploy/blob/master/deploy.php) and create similar `deploy.php` with additional configurations as per need.
+2. Place it in location `.github/deploy/deploy.php` of the project's repo.
+
+That's it! That `deploy.php` will be respected in all deployments of that project.
+
 ## License
 
 [MIT](LICENSE) © 2019 rtCamp
