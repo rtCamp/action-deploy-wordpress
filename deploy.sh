@@ -80,6 +80,7 @@ Host github.com
 HostName github.com
 IdentityFile ${SSH_DIR}/submodule_deploy_key
 User git
+UserKnownHostsFile /etc/ssh/known_hosts
 EOL
     fi
     git submodule update --init --recursive
