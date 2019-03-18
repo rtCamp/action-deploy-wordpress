@@ -13,7 +13,7 @@ This action is a part of [GitHub action library](https://github.com/rtCamp/githu
 You can use this action after any other action to deploy the files of your repo to WordPress site. Here is an example setup of this action:
 
 1. Create a `.github/main.workflow` in your GitHub repo.
-2. Create `.github/hosts.yml` inventory file, which is a standard [Deployer inventory file](https://deployer.org/docs/hosts.html#inventory-file), to map the details of deployments. 
+2. Create `.github/hosts.yml` inventory file, which is a standard [Deployer inventory file](https://deployer.org/docs/hosts.html#inventory-file), to map the details of deployments. Only the GitHub branches mapped in `hosts.yml` will be deployed, rest will be filtered out.
 3. Here is a sample minimal [hosts.yml](https://github.com/rtCamp/wordpress-skeleton/blob/master/.github/hosts.yml) required for deployment. Additional `ci_script_options` config block is required for this action as defined in the [sample](https://github.com/rtCamp/wordpress-skeleton/blob/master/.github/hosts.yml) for customisations.
 4. Add the following code to the `main.workflow` file and commit it to the repo's `master` branch.
 
