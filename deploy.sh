@@ -75,6 +75,7 @@ if [[ -f "$GITHUB_WORKSPACE/.gitmodules" ]]; then
 
     if [[ -n "$SUBMODULE_DEPLOY_KEY" ]]; then
         echo "$SUBMODULE_DEPLOY_KEY" | tr -d '\r' > "$SSH_DIR/submodule_deploy_key"
+        chmod 600 "$SSH_DIR/submodule_deploy_key"
         cat >> /etc/ssh/ssh_config <<EOL
 Host github.com
 HostName github.com
