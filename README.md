@@ -4,6 +4,8 @@
 2. This action can be used when you have the contents of `wp-content` folder in root of your repository. [This](https://github.com/rtCamp/github-actions-wordpress-skeleton) is how a skeleton repo would look like. 
 3. During deployment, by default this action will download [WordPress](https://wordpress.org/latest.zip), put the content of the repo in `wp-content` directory and then deploy the entire WordPress setup on the deploy path specified in `hosts.yml`. 
 
+This action is a part of [GitHub action library](https://github.com/rtCamp/github-actions-library/) created by [rtCamp](https://github.com/rtCamp/).
+
 ## Installation
 
 >To use this GitHub Action, you must have access to GitHub Actions. GitHub Actions are currently only available in public beta (you must [apply for access](https://github.com/features/actions)).
