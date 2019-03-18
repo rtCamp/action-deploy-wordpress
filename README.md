@@ -42,7 +42,7 @@ MU_PLUGINS_URL="https://github.com/Automattic/vip-mu-plugins-public"
 
 ### Vault
 
-1. The setup of ssh keys for deployment is supported through [vault](https://www.vaultproject.io/). `VAULT_ADDR` secret variable specifies the address on which vault is deployed, e.g., `VAULT_ADDR=https://example.com:8200`.
+1. The setup of ssh keys for deployment is supported through [vault](https://www.vaultproject.io/). `VAULT_ADDR` secret variable specifies the address on which vault is deployed, e.g., `VAULT_ADDR=https://example.com:8200`. [VAULT_TOKEN](https://www.vaultproject.io/docs/concepts/tokens.html) is the token by which authentication with vault will be possible to retrieve the secrets and information.
 
 2. For Signed SSH Certificates to work, follow the steps give [here](https://www.vaultproject.io/docs/secrets/ssh/signed-ssh-certificates.html#signing-key-amp-role-configuration) on the deployed vault instance.
 
