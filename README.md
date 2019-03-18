@@ -1,7 +1,7 @@
 # WordPress Deploy - GitHub Action
 
 1. A [GitHub Action](https://github.com/features/actions) that can be used to deploy a WordPress site using [Deployer](https://deployer.org/).
-2. This action can be used when you have the contents of `wp-content` folder in root of your repository. [This](https://github.com/rtCamp/github-actions-wordpress-skeleton) is how a skeleton repo would look like. 
+2. This action can be used when you have the contents of `wp-content` folder in root of your repository. [This](https://github.com/rtCamp/wordpress-skeleton) is how a skeleton repo would look like. 
 3. During deployment, by default this action will download [WordPress](https://wordpress.org/latest.zip), put the content of the repo in `wp-content` directory and then deploy the entire WordPress setup on the deploy path specified in `hosts.yml`. 
 
 This action is a part of [GitHub action library](https://github.com/rtCamp/github-actions-library/) created by [rtCamp](https://github.com/rtCamp/).
@@ -14,7 +14,7 @@ You can use this action after any other action to deploy the files of your repo 
 
 1. Create a `.github/main.workflow` in your GitHub repo.
 2. Create `.github/hosts.yml` inventory file, which is a standard [Deployer inventory file](https://deployer.org/docs/hosts.html#inventory-file), to map the details of deployments. 
-3. Here is a sample minimal [hosts.yml](https://github.com/rtCamp/github-actions-wordpress-skeleton/blob/master/.github/hosts.yml) required for deployment. Additional `ci_script_options` config block is required for this action as defined in the [sample](https://github.com/rtCamp/github-actions-wordpress-skeleton/blob/master/.github/hosts.yml) for customisations.
+3. Here is a sample minimal [hosts.yml](https://github.com/rtCamp/wordpress-skeleton/blob/master/.github/hosts.yml) required for deployment. Additional `ci_script_options` config block is required for this action as defined in the [sample](https://github.com/rtCamp/wordpress-skeleton/blob/master/.github/hosts.yml) for customisations.
 4. Add the following code to the `main.workflow` file and commit it to the repo's `master` branch.
 
 ```bash
