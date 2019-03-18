@@ -62,14 +62,23 @@ if [[ -n "$VAULT_ADDR" ]]; then
     cat > /etc/ssh/ssh_config <<EOL
 Host $hostname
 HostName $hostname
-IdentityFile ${HOME}/.ssh/signed-cert.pub
-IdentityFile ${HOME}/.ssh/id_rsa
+IdentityFile ${SSH_DIR}/signed-cert.pub
+IdentityFile ${SSH_DIR}/id_rsa
 User root
 EOL
 fi
 
 # Check and update submodules if any
 if [[ -f "$GITHUB_WORKSPACE/.gitmodules" ]]; then
+    if [[ -n "$SUBMODULE_DEPLOY_KEY" ]]; then
+        echo "$SUBMODULE_DEPLOY_KEY" | tr -d '\r' > "$SSH_DIR/submodule_deploy_key"
+        cat >> /etc/ssh/ssh_config <<EOL
+Host github.com
+HostName github.com
+IdentityFile ${SSH_DIR}/submodule_deploy_key
+User git
+EOL
+    fi
     git submodule update --init --recursive
 fi
 
