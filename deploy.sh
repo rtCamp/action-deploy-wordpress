@@ -68,6 +68,11 @@ User root
 EOL
 fi
 
+# Check and update submodules if any
+if [[ -f "$GITHUB_WORKSPACE/.gitmodules" ]]; then
+    git submodule update --init --recursive
+fi
+
 mkdir -p "$HTDOCS"
 cd "$HTDOCS"
 export build_root="$(pwd)"
