@@ -1,4 +1,4 @@
-# WordPress Deploy - GitHub Action
+# Deploy WordPress - GitHub Action
 
 1. A [GitHub Action](https://github.com/features/actions) that can be used to deploy a WordPress site using [Deployer](https://deployer.org/).
 2. This action can be used when you have the contents of `wp-content` folder in root of your repository. [This](https://github.com/rtCamp/wordpress-skeleton) is how a skeleton repo would look like. 
@@ -24,7 +24,7 @@ workflow "Deploying WordPress Site" {
 }
 
 action "Deploy" {
-  uses = "rtCamp/action-wordpress-deploy@master"
+  uses = "rtCamp/action-deploy-wordpress@master"
   secrets = ["SSH_PRIVATE_KEY"]
 }
 ```
@@ -74,7 +74,7 @@ workflow "Deploying WordPress Site using vault" {
 }
 
 action "Deploy" {
-  uses = "rtCamp/action-wordpress-deploy@master"
+  uses = "rtCamp/action-deploy-wordpress@master"
   secrets = ["VAULT_ADDR", "VAULT_TOKEN"]
 }
 ```
@@ -88,7 +88,7 @@ workflow "Deploying WordPress Site using vault" {
 }
 
 action "Deploy" {
-  uses = "rtCamp/action-wordpress-deploy@master"
+  uses = "rtCamp/action-deploy-wordpress@master"
   secrets = ["VAULT_ADDR", "VAULT_GITHUB_TOKEN"]
 }
 ```
@@ -99,7 +99,7 @@ Any file kept inside `.github/deploy` folder of a project's repo which is presen
 
 For example, if you needed something custom in `deploy.php` for some project's deployment here is what you would do:
 
-1. Take a reference of [this deploy.php](https://github.com/rtCamp/action-wordpress-deploy/blob/master/deploy.php) and create similar `deploy.php` with additional configurations as per need.
+1. Take a reference of [this deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php) and create similar `deploy.php` with additional configurations as per need.
 2. Place it in location `.github/deploy/deploy.php` of the project's repo.
 
 That's it! That `deploy.php` will be respected in all deployments of that project.
