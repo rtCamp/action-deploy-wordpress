@@ -4,7 +4,7 @@ This action is a part of [GitHub Actions Library](https://github.com/rtCamp/gith
 
 # Deploy WordPress - GitHub Action
 
-A [GitHub Action](https://github.com/features/actions) to deploy WordPress on a server using [PHP's Deployer.org projec t](https://deployer.org/).
+A [GitHub Action](https://github.com/features/actions) to deploy WordPress on a server using [PHP's Deployer.org project](https://deployer.org/).
 
 Please note that, this action expects git repo structure in a certain way. Your webroot should include content inside `wp-content` except `uploads`. You may use our [WordPress Skeleton](https://github.com/rtCamp/wordpress-skeleton) as a base, or restructre existing project to fit in.
 
