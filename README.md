@@ -43,6 +43,36 @@ Variable       | Default | Possible  Values            | Purpose
 `WP_VERSION`     | latest  | Any valid WordPress version | If you specify a WordPress version, then that speicifc WordPress version will be downloaded, instead of latest WordPress version.
 
 
+## Server Setup
+
+The Deployer.org expects server setup in a particular way.
+
+### Using [EasyEngine](https://easyengine.io/) v4
+
+#### New Site
+
+1. Pass flag `--public-dir=current` during site creation.
+2. Delete the `current` folder using `rm -r /opt/easyengine/sites/example.com/app/htdocs/current`.
+
+The `current` folder will be automatically created by Deployer during execution.
+
+#### Existing Site
+1. Open file `/opt/easyengine/sites/example.com/config/nginx/conf.d/main.conf`.
+2. Replace `/var/www/htdocs` with `/var/www/htdocs/current`.
+3. Run `ee site reload example.com`.
+4. Move `wp-config.php` to `htdocs`. You can use following command:
+
+```bash
+mv /opt/easyengine/sites/example.com/app/wp-config.php /opt/easyengine/sites/example.com/app/htdocs/wp-config.php
+```
+
+### Not using EasyEngine
+
+1. Make sure your web server points to `current` subdirectory inside original webroot. Make sure `current` subdirectory do NOT exist actually.
+2. You may need to reload your webserver.
+3. You may need to change location of `wp-config.php` as we need in above section.
+
+
 ## Hashicorp Vault (Optional)
 
 This GitHub action supports [Hashicorp Vault](https://www.vaultproject.io/). This comes in handy if you manage multiple servers and providing `SSH_PRIVATE_KEY` as GitHub secret per project becomes cumbersome.
@@ -54,7 +84,7 @@ Variable      | Purpose                                                         
 `VAULT_ADDR`  | [Vault server address](https://www.vaultproject.io/docs/commands/#vault_addr) | `https://example.com:8200`
 `VAULT_TOKEN` | [Vault token](https://www.vaultproject.io/docs/concepts/tokens.html)          | `s.gIX5MKov9TUp7iiIqhrP1HgN`
 
-You will need to change `secrets` line in `main.workflow` file to look like below. 
+You will need to change `secrets` line in `main.workflow` file to look like below.
 
 ```bash
 workflow "Deploying WordPress Site using vault" {
@@ -88,7 +118,7 @@ systemctl restart ssh
 
 ## Overriding default deployement behavior
 
-Create a file at location `.github/deploy/deploy.php` in your git repo to provide your own [Deployer.org](https://deployer.org/) script. 
+Create a file at location `.github/deploy/deploy.php` in your git repo to provide your own [Deployer.org](https://deployer.org/) script.
 
 Please note that it will completely override this action's [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php). So if you need some portion of [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php), you need to copy that to your own `.github/deploy/deploy.php`.
 
