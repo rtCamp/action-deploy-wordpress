@@ -7,8 +7,8 @@ require 'recipe/common.php';
 set('ssh_type', 'native');
 set('ssh_multiplexing', true);
 
-if (file_exists('vendor/deployer/recipes/rsync.php')) {
-	require 'vendor/deployer/recipes/rsync.php';
+if (file_exists('vendor/deployer/recipes/recipe/rsync.php')) {
+	require 'vendor/deployer/recipes/recipe/rsync.php';
 } else {
 	require getenv('COMPOSER_HOME') . '/vendor/deployer/recipes/recipe/rsync.php';
 }
@@ -19,6 +19,17 @@ set('writable_dirs', [
 	'wp-content/uploads',
 ]);
 inventory('/hosts.yml');
+
+$deployer = Deployer::get();
+$hosts = $deployer->hosts;
+
+foreach ($hosts as $host) {
+	$host
+	->addSshOption('UserKnownHostsFile', '/dev/null')
+	->addSshOption('StrictHostKeyChecking', 'no');
+
+	$deployer->hosts->set($host->getHostname(), $host);
+}
 
 // Add tests and other directory uncessecary for
 // production to exclude block.
