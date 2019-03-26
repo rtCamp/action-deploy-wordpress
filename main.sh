@@ -84,7 +84,7 @@ cd "$HTDOCS/wp-content/"
 rm -rf uploads
 
 # Setup mu-plugins if VIP
-if [[ -z "$MU_PLUGINS_URL" ]]; then
+if [[ -n "$MU_PLUGINS_URL" ]]; then
     if [[ "$MU_PLUGINS_URL" = "vip" ]]; then
         MU_PLUGINS_URL="https://github.com/Automattic/vip-mu-plugins-public"
     fi
