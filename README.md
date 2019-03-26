@@ -35,18 +35,17 @@ action "Deploy" {
 
 ## Environment Variables
 
-This GitHub action's behavior can be customized using following environment variables.
-
+This GitHub action's behavior can be customized using following environment variables:
 
 Variable       | Default | Possible  Values            | Purpose
 ---------------|---------|-----------------------------|----------------------------------------------------
 `MU_PLUGINS_URL` | null    | vip, any git repo url         | If value is `vip`, then action will clone [VIP's MU plugins](https://github.com/Automattic/vip-mu-plugins-public) as `mu-plugins` folder. If you want to specifiy a non-VIP mu-plugins repo, you can provide a publicly accessible mu-plugins repo URL as the value.
-`WP_VERSION`     | latest  | Any valid WordPress version | If you specify a WordPress version, that speicifc WordPress version will be download, instead of latest WordPress version
+`WP_VERSION`     | latest  | Any valid WordPress version | If you specify a WordPress version, then that speicifc WordPress version will be downloaded, instead of latest WordPress version.
 
 
 ## Hashicorp Vault (Optional)
 
-This GitHub action supports [Hashicorp Vault](https://www.vaultproject.io/). This comes in handy if you manage multiple servers and providing SSH_PRIVATE_KEY as GitHub secret per project becomes cumbersome.
+This GitHub action supports [Hashicorp Vault](https://www.vaultproject.io/). This comes in handy if you manage multiple servers and providing `SSH_PRIVATE_KEY` as GitHub secret per project becomes cumbersome.
 
 To enable Hashicorp Vault support, please define following GitHub secrets:
 
