@@ -15,7 +15,7 @@ During deployment, by default this action will download [WordPress](https://word
 ## Usage
 
 1. Create a `.github/main.workflow` in your GitHub repo, if one doesn't exist already.
-2. Add the following code to the `main.workflow` file and commit it to the repo's `master` branch.
+2. Add the following code to the `main.workflow` file.
 
 ```bash
 workflow "Deploying WordPress Site" {
