@@ -90,7 +90,7 @@ systemctl restart ssh
 
 Create a file at location `.github/deploy/deploy.php` in your git repo to provide your own [Deployer.org](https://deployer.org/) script. 
 
-Please note that it will completely override this action's original [deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php). So if you need some portion of original file, you need to copy that to your own `deploy.php`.
+Please note that it will completely override this action's [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php). So if you need some portion of [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php), you need to copy that to your own `deploy.php`.
 
 ## License
 
