@@ -89,8 +89,7 @@ task('opcache:reset', function () {
 		$output = run( 'ee shell --command="php current/cachetool.phar opcache:reset --fcgi=127.0.0.1:9000" --skip-tty' );
 
 	} else {
-		echo 'EasyEngine verison >=3.x.x is required.';
-		exit(1);
+		echo 'Skipping opcache reset as EasyEnigne is installed.';
 	}
 
 	writeln('<info>' . $output . '</info>');
