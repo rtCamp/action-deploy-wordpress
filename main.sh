@@ -62,10 +62,33 @@ if [[ -n "$VAULT_ADDR" ]]; then
     cat > /etc/ssh/ssh_config <<EOL
 Host $hostname
 HostName $hostname
-IdentityFile ${HOME}/.ssh/signed-cert.pub
-IdentityFile ${HOME}/.ssh/id_rsa
+IdentityFile ${SSH_DIR}/signed-cert.pub
+IdentityFile ${SSH_DIR}/id_rsa
 User root
 EOL
+fi
+
+# Check and update submodules if any
+if [[ -f "$GITHUB_WORKSPACE/.gitmodules" ]]; then
+    # add github's public key
+    echo "|1|qPmmP7LVZ7Qbpk7AylmkfR0FApQ=|WUy1WS3F4qcr3R5Sc728778goPw= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" >> /etc/ssh/known_hosts
+
+    identity_file=''
+    if [[ -n "$SUBMODULE_DEPLOY_KEY" ]]; then
+        echo "$SUBMODULE_DEPLOY_KEY" | tr -d '\r' > "$SSH_DIR/submodule_deploy_key"
+        chmod 600 "$SSH_DIR/submodule_deploy_key"
+        identity_file="IdentityFile ${SSH_DIR}/submodule_deploy_key"
+    fi
+
+    # Setup config file for proper git cloning
+    cat >> /etc/ssh/ssh_config <<EOL
+Host github.com
+HostName github.com
+User git
+UserKnownHostsFile /etc/ssh/known_hosts
+${identity_file}
+EOL
+    git submodule update --init --recursive
 fi
 
 mkdir -p "$HTDOCS"
