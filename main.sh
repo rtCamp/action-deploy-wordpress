@@ -95,7 +95,7 @@ mkdir -p "$HTDOCS"
 cd "$HTDOCS"
 export build_root="$(pwd)"
 
-WP_VERSION=$(cat "$hosts_file" | shyaml get-value "$CI_SCRIPT_OPTIONS.wp-version" | tr '[:upper:]' '[:lower:]')
+WP_VERSION=${WP_VERSION:-"latest"}
 wp core download --version="$WP_VERSION" --allow-root
 
 rm -r wp-content/
@@ -107,9 +107,10 @@ cd "$HTDOCS/wp-content/"
 rm -rf uploads
 
 # Setup mu-plugins if VIP
-VIP=$(cat "$hosts_file" | shyaml get-value "$CI_SCRIPT_OPTIONS.vip" | tr '[:upper:]' '[:lower:]')
-if [ "$VIP" = "true" ]; then
-    MU_PLUGINS_URL=${MU_PLUGINS_URL:-"https://github.com/Automattic/vip-mu-plugins-public"}
+if [[ -n "$MU_PLUGINS_URL" ]]; then
+    if [[ "$MU_PLUGINS_URL" = "vip" ]]; then
+        MU_PLUGINS_URL="https://github.com/Automattic/vip-mu-plugins-public"
+    fi
     MU_PLUGINS_DIR="$HTDOCS/wp-content/mu-plugins"
     echo "Cloning mu-plugins from: $MU_PLUGINS_URL"
     git clone -q --recursive --depth=1 "$MU_PLUGINS_URL" "$MU_PLUGINS_DIR"

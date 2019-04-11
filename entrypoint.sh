@@ -2,7 +2,7 @@
 
 # custom path for files to override default files
 custom_path="$GITHUB_WORKSPACE/.github/deploy"
-main_script="/deploy.sh"
+main_script="/main.sh"
 
 if [[ -d "$custom_path" ]]; then
     rsync -av "$custom_path/" /
