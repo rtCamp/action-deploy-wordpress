@@ -30,9 +30,6 @@ export HTDOCS="$HOME/htdocs"
 export GITHUB_BRANCH=${GITHUB_REF##*heads/}
 export CI_SCRIPT_OPTIONS="ci_script_options"
 
-# get hostname
-hostname=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.hostname")
-
 printf "[\e[0;34mNOTICE\e[0m] Setting up SSH access to server.\n"
 
 SSH_DIR="$HOME/.ssh"
@@ -60,8 +57,7 @@ if [[ -n "$VAULT_ADDR" ]]; then
 
     # Create ssh config file. `~/.ssh/config` does not work.
     cat > /etc/ssh/ssh_config <<EOL
-Host $hostname
-HostName $hostname
+Host *
 IdentityFile ${SSH_DIR}/signed-cert.pub
 IdentityFile ${SSH_DIR}/id_rsa
 User root
