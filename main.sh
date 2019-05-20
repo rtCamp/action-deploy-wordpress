@@ -24,6 +24,12 @@ if [[ "$match" -eq 0 ]]; then
     exit 78
 fi
 
+# Exit if branch deletion detected
+if [[ "true" == $(jq --raw-output .deleted "$GITHUB_EVENT_PATH") ]]; then
+    echo 'Branch deletion trigger found. Skipping deployment.'
+    exit 78
+fi
+
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 export PROJECT_ROOT="$(pwd)"
 export HTDOCS="$HOME/htdocs"
