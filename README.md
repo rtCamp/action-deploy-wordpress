@@ -14,19 +14,22 @@ During deployment, by default this action will download [WordPress](https://word
 
 ## Usage
 
-1. Create a `.github/main.workflow` in your GitHub repo, if one doesn't exist already.
-2. Add the following code to the `main.workflow` file.
+1. Create a `.github/workflows/deploy.yml` file in your GitHub repo, if one doesn't exist already.
+2. Add the following code to the `deploy.yml` file.
 
 ```bash
-workflow "Deploying WordPress Site" {
-  resolves = ["Deploy"]
-  on = "push"
-}
-
-action "Deploy" {
-  uses = "rtCamp/action-deploy-wordpress@master"
-  secrets = ["SSH_PRIVATE_KEY"]
-}
+on: push
+name: Deploying WordPress Site
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Deploy
+      uses: rtCamp/action-deploy-wordpress@master
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 ```
 
 3. Create `SSH_PRIVATE_KEY` secret using [GitHub Action's Secret](https://developer.github.com/actions/creating-workflows/storing-secrets) and store the private key that you use use to ssh to server(s) defined in `hosts.yml`.
