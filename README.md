@@ -17,7 +17,7 @@ During deployment, by default this action will download [WordPress](https://word
 1. Create a `.github/workflows/deploy.yml` file in your GitHub repo, if one doesn't exist already.
 2. Add the following code to the `deploy.yml` file.
 
-```bash
+```yml
 on: push
 name: Deploying WordPress Site
 jobs:
@@ -87,18 +87,22 @@ Variable      | Purpose                                                         
 `VAULT_ADDR`  | [Vault server address](https://www.vaultproject.io/docs/commands/#vault_addr) | `https://example.com:8200`
 `VAULT_TOKEN` | [Vault token](https://www.vaultproject.io/docs/concepts/tokens.html)          | `s.gIX5MKov9TUp7iiIqhrP1HgN`
 
-You will need to change `secrets` line in `main.workflow` file to look like below.
+You will need to change `secrets` line in `deploy.yml` file to look like below.
 
-```bash
-workflow "Deploying WordPress Site using vault" {
-  resolves = ["Deploy"]
-  on = "push"
-}
-
-action "Deploy" {
-  uses = "rtCamp/action-deploy-wordpress@master"
-  secrets = ["VAULT_ADDR", "VAULT_TOKEN"]
-}
+```yml
+on: push
+name: Deploying WordPress Site using vault
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Deploy
+      uses: rtCamp/action-deploy-wordpress@master
+      env:
+        VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+        VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
 ```
 
 GitHub action uses `VAULT_TOKEN` to connect to `VAULT_ADDR` to retrieve [Signed SSH Certificates](https://www.vaultproject.io/docs/secrets/ssh/signed-ssh-certificates.html#signing-key-amp-role-configuration) and uses it for deployment.
