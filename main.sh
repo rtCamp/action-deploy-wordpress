@@ -108,7 +108,7 @@ wp core download --version="$WP_VERSION" --allow-root
 rm -r wp-content/
 
 # Include webroot-files in htdocs if they exists
-if [[ -d "$GITHUB_WORKSPACE/webroot-files" ]]; then;
+if [[ -d "$GITHUB_WORKSPACE/webroot-files" ]]; then
     rsync -av  "$GITHUB_WORKSPACE/webroot-files/" "$HTDOCS/"  > /dev/null
     rm -rf "$GITHUB_WORKSPACE/webroot-files/"
 fi
