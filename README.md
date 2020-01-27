@@ -25,9 +25,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - name: Deploy
-      uses: rtCamp/action-deploy-wordpress@master
+      uses: rtCamp/action-deploy-wordpress@v2.0.0
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 ```
@@ -97,9 +97,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - name: Deploy
-      uses: rtCamp/action-deploy-wordpress@master
+      uses: rtCamp/action-deploy-wordpress@v2.0.0
       env:
         VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
         VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
