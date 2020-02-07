@@ -1,10 +1,10 @@
 # alpine:latest at 2019-01-04T21:27:39IST
 FROM alpine@sha256:46e71df1e5191ab8b8034c5189e325258ec44ea739bba1e5645cff83c9048ff1
 
-LABEL "com.github.actions.icon"="star"
-LABEL "com.github.actions.color"="ffd33d"
+LABEL "com.github.actions.icon"="upload-cloud"
+LABEL "com.github.actions.color"="yellow"
 LABEL "com.github.actions.name"="Deploy WordPress"
-LABEL "com.github.actions.description"="This task will deploy an application"
+LABEL "com.github.actions.description"="Deploy WordPress code to a server"
 
 # Environments
 ENV TIMEZONE                 Asia/Kolkata
