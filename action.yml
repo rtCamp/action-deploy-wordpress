@@ -1,0 +1,9 @@
+name: 'Deploy WordPress'
+description: 'Deploy WordPress code to a server'
+author: 'rtCamp'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'upload-cloud'
+  color: 'yellow'
