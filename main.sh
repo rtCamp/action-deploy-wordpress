@@ -17,7 +17,7 @@ if [[ ! -z "$JUMPHOST_SERVER" ]]; then
     if [[ -z "$SSH_PRIVATE_KEY" ]]; then
         echo "Jump host configuration does not work with vault ssh signing."
         echo "SSH_PRIVATE_KEY secret needs to be added."
-        echo "Add SSH key to that gives access to the server as well as jumphost."
+        echo "The SSH key should have access to the server as well as jumphost."
         exit 1
     fi
 fi
