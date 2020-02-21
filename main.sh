@@ -6,9 +6,20 @@ rsync -av "$hosts_file" /hosts.yml
 cat /hosts.yml
 
 # Check branch
-if [ "$GITHUB_REF" = "" ]; then
+if [[ "$GITHUB_REF" = "" ]]; then
     echo "\$GITHUB_REF is not set"
     exit 1
+fi
+
+# Check for SSH key if jump host is defined
+if [[ ! -z "$JUMPHOST_SERVER" ]]; then
+    
+    if [[ -z "$SSH_PRIVATE_KEY" ]]; then
+        echo "Jump host configuration does not work with vault ssh signing."
+        echo "SSH_PRIVATE_KEY secret needs to be added."
+        echo "Add SSH key to that gives access to the server as well as jumphost."
+        exit 1
+    fi
 fi
 
 match=0
@@ -50,6 +61,10 @@ if [[ -n "$SSH_PRIVATE_KEY" ]]; then
     chmod 600 "$SSH_DIR/id_rsa"
     eval "$(ssh-agent -s)"
     ssh-add "$SSH_DIR/id_rsa"
+
+    if [[ -n "$JUMPHOST_SERVER" ]]; then
+        ssh-keyscan -H "$JUMPHOST_SERVER" >> /etc/ssh/known_hosts 
+    fi
 else
     # Generate a key-pair
     ssh-keygen -t rsa -b 4096 -C "GH-actions-ssh-deploy-key" -f "$HOME/.ssh/id_rsa" -N ""
@@ -63,6 +78,9 @@ fi
 
 if [[ -n "$VAULT_ADDR" ]]; then
     vault write -field=signed_key ssh-client-signer/sign/my-role public_key=@$HOME/.ssh/id_rsa.pub > $HOME/.ssh/signed-cert.pub
+fi
+
+if [[ -z "$JUMPHOST_SERVER" ]]; then
 
     # Create ssh config file. `~/.ssh/config` does not work.
     cat > /etc/ssh/ssh_config <<EOL
@@ -71,6 +89,19 @@ HostName $hostname
 IdentityFile ${SSH_DIR}/signed-cert.pub
 IdentityFile ${SSH_DIR}/id_rsa
 User root
+EOL
+else
+    # Create ssh config file. `~/.ssh/config` does not work.
+    cat > /etc/ssh/ssh_config <<EOL
+Host jumphost
+    HostName $JUMPHOST_SERVER
+    UserKnownHostsFile /etc/ssh/known_hosts
+
+Host $hostname
+    HostName $hostname
+    ProxyJump jumphost
+    UserKnownHostsFile /etc/ssh/known_hosts
+    User root
 EOL
 fi
 
