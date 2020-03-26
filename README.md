@@ -45,6 +45,7 @@ Variable          | Default | Possible  Values            | Purpose
 `MU_PLUGINS_URL`  | null    | vip, any git repo url         | If value is `vip`, then action will clone [VIP's MU plugins](https://github.com/Automattic/vip-mu-plugins-public) as `mu-plugins` folder. If you want to specifiy a non-VIP mu-plugins repo, you can provide a publicly accessible mu-plugins repo URL as the value.
 `WP_VERSION`      | latest  | Any valid WordPress version | If you specify a WordPress version, then that speicifc WordPress version will be downloaded, instead of latest WordPress version.
 `JUMPHOST_SERVER` | null    | Hostname/IP address of the jumphost server | If the deployment server is not directly accessible, and needs a jumphost, then this method should be used. (Note: The `SSH_PRIVATE_KEY` env variable should have access to the jumphost as well as deployment server for this to work. Also, this method does not work with vault.)
+`SUBMODULE_DEPLOY_KEY` | null | Read access deploy key created in the submodule repo's deploy keys. | Only required for privated submodule repo. For now only one private submodule deploy key is allowed. All public submodules in repo will be fetched by default without the need of this env variable. (To create a deploy key go to: Settings > Deploy Keys > Add deploy key)
 
 
 ## Server Setup
