@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Deploy
-      uses: rtCamp/action-deploy-wordpress@v2.0.0
+      uses: rtCamp/action-deploy-wordpress@v2.0.2
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 ```
@@ -101,7 +101,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Deploy
-      uses: rtCamp/action-deploy-wordpress@v2.0.0
+      uses: rtCamp/action-deploy-wordpress@v2.0.2
       env:
         VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
         VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
