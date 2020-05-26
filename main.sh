@@ -47,8 +47,9 @@ export HTDOCS="$HOME/htdocs"
 export GITHUB_BRANCH=${GITHUB_REF##*heads/}
 export CI_SCRIPT_OPTIONS="ci_script_options"
 
-# get hostname
+# get hostname and ssh user
 hostname=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.hostname")
+ssh_user=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.user")
 
 printf "[\e[0;34mNOTICE\e[0m] Setting up SSH access to server.\n"
 
@@ -88,7 +89,7 @@ Host $hostname
 HostName $hostname
 IdentityFile ${SSH_DIR}/signed-cert.pub
 IdentityFile ${SSH_DIR}/id_rsa
-User root
+User $ssh_user
 EOL
 else
     # Create ssh config file. `~/.ssh/config` does not work.
@@ -96,12 +97,13 @@ else
 Host jumphost
     HostName $JUMPHOST_SERVER
     UserKnownHostsFile /etc/ssh/known_hosts
+    User $ssh_user
 
 Host $hostname
     HostName $hostname
     ProxyJump jumphost
     UserKnownHostsFile /etc/ssh/known_hosts
-    User root
+    User $ssh_user
 EOL
 fi
 
