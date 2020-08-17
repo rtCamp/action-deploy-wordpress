@@ -96,6 +96,28 @@ task('opcache:reset', function () {
 
 });
 
+desc('Upgrade WordPress DB');
+task('core_db:update', function () {
+
+	$ee_version = run('ee --version');
+
+	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
+
+		$output = run('cd {{release_path}} && wp core update-db');
+
+	} elseif ( false !== strpos( $ee_version, 'EE 4' ) ) {
+
+		cd( '{{deploy_path}}' );
+		$output = run( 'cd current && ee shell --command="wp core update-db" --skip-tty' );
+
+	} else {
+		echo 'Skipping WordPress db core update as EasyEnigne is not installed.';
+	}
+
+	writeln('<info>' . $output . '</info>');
+
+});
+
 desc('Symlink wp-config.php');
 task('wp:config', function () {
 	run('[ ! -f {{release_path}}/../wp-config.php ] && cd {{release_path}}/../ && ln -sn ../wp-config.php && echo "Created Symlink for wp-config.php." || echo ""');
@@ -125,6 +147,7 @@ task('deploy', [
 	'deploy:symlink',
 	'permissions:set',
 	'opcache:reset',
+	'core_db:update',
 	'deploy:unlock',
 	'cleanup'
 ]);
