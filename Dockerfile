@@ -1,5 +1,5 @@
-# alpine:latest at 2019-01-04T21:27:39IST
-FROM alpine@sha256:46e71df1e5191ab8b8034c5189e325258ec44ea739bba1e5645cff83c9048ff1
+# alpine:latest at 2020-09-23T15:12:25IST
+FROM alpine@sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f60a771a2dfe321
 
 LABEL "com.github.actions.icon"="upload-cloud"
 LABEL "com.github.actions.color"="yellow"
@@ -37,6 +37,8 @@ RUN apk update \
         unzip \
         wget \
         zip \
+        nodejs \
+        npm \
         openssh-client \
         php7 \
         php7-dev \
@@ -76,8 +78,8 @@ RUN apk update \
         php7-zmq \
         php7-memcached \
         php7-xmlreader \
-        python \
-        py2-pip \
+        python3 \
+        py-pip \
     && pip install shyaml \
     && cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
     && echo "${TIMEZONE}" > /etc/timezone \
