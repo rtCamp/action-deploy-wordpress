@@ -38,7 +38,6 @@ set('rsync', [
 		'.git',
 		'.github',
 		'deploy.php',
-		'composer.json',
 		'composer.lock',
 		'.env',
 		'.env.example',
