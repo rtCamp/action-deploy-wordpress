@@ -169,13 +169,12 @@ function setup_wordpress_files() {
 	WP_VERSION=${WP_VERSION:-"latest"}
 
 	if [[ "$WP_MINOR_UPDATE" == "true" ]] && [[ "$WP_VERSION" != "latest" ]]; then
-		# Ref: https://codex.wordpress.org/WordPress.org_API
-		# Ref: https://wordpress.stackexchange.com/a/368758/189798
 		LATEST_MINOR_VERSION=$(\
 			curl -s "https://api.wordpress.org/core/version-check/1.7/?version=$WP_VERSION" | \
 			jq -r '[.offers[]|select(.response=="autoupdate")][-1].version'
 		)
-		if [[ "$LATEST_MINOR_VERSION" == "$WP_VERSION"* ]]; then
+		MAJOR_DOT_MINOR=$(echo "$WP_VERSION" | cut -c1-3)
+		if [[ "$LATEST_MINOR_VERSION" == "$MAJOR_DOT_MINOR"* ]]; then
 			WP_VERSION="$LATEST_MINOR_VERSION"
 			echo "Using $LATEST_MINOR_VERSION as the latest minor version."
 		else
