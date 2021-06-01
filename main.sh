@@ -167,6 +167,21 @@ function setup_wordpress_files() {
 	export build_root="$(pwd)"
 
 	WP_VERSION=${WP_VERSION:-"latest"}
+
+	if [[ "$WP_MINOR_UPDATE" == "true" ]] && [[ "$WP_VERSION" != "latest" ]]; then
+		LATEST_MINOR_VERSION=$(\
+			curl -s "https://api.wordpress.org/core/version-check/1.7/?version=$WP_VERSION" | \
+			jq -r '[.offers[]|select(.response=="autoupdate")][-1].version'
+		)
+		MAJOR_DOT_MINOR=$(echo "$WP_VERSION" | cut -c1-3)
+		if [[ "$LATEST_MINOR_VERSION" == "$MAJOR_DOT_MINOR"* ]]; then
+			WP_VERSION="$LATEST_MINOR_VERSION"
+			echo "Using $LATEST_MINOR_VERSION as the latest minor version."
+		else
+			echo "$WP_VERSION is the latest minor version."
+		fi
+	fi
+
 	wp core download --version="$WP_VERSION" --allow-root
 
 	rm -r wp-content/
