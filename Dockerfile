@@ -1,5 +1,5 @@
-# alpine:latest at 2020-09-23T15:12:25IST
-FROM alpine@sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f60a771a2dfe321
+# alpine:latest at 2021-06-01T15:15:12IST
+FROM alpine@sha256:69e70a79f2d41ab5d637de98c1e0b055206ba40a8145e7bddb55ccc04e13cf8f
 
 LABEL "com.github.actions.icon"="upload-cloud"
 LABEL "com.github.actions.color"="yellow"
