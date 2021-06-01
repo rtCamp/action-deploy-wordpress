@@ -5,6 +5,7 @@ LABEL "com.github.actions.icon"="upload-cloud"
 LABEL "com.github.actions.color"="yellow"
 LABEL "com.github.actions.name"="Deploy WordPress"
 LABEL "com.github.actions.description"="Deploy WordPress code to a server"
+LABEL "org.opencontainers.image.source"="https://github.com/rtCamp/action-deploy-wordpress"
 
 # Environments
 ENV TIMEZONE                 Asia/Kolkata
