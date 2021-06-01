@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Deploy
-      uses: rtCamp/action-deploy-wordpress@v2.0.2
+      uses: rtCamp/action-deploy-wordpress@v2
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 ```
@@ -102,7 +102,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Deploy
-      uses: rtCamp/action-deploy-wordpress@v2.0.2
+      uses: rtCamp/action-deploy-wordpress@v2
       env:
         VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
         VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
@@ -134,7 +134,7 @@ Please note that it will completely override this action's [original deploy.php]
 
 ## License
 
-[MIT](LICENSE) © 2019 rtCamp
+[MIT](LICENSE) © 2021 rtCamp
 
 ## Does this interest you?
 
