@@ -166,7 +166,15 @@ function setup_wordpress_files() {
 	cd "$HTDOCS"
 	export build_root="$(pwd)"
 
-	WP_VERSION=${WP_VERSION:-"latest"}
+	hosts_wp_version=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.WP_VERSION" 2> /dev/null)
+
+	# Check if WP_VERSION is already defined in hosts.yml
+	# Priority: 1. hosts.yml, 2. workflow file, else use latest
+	if [[ -n $hosts_wp_version ]]; then
+		WP_VERSION="$hosts_wp_version"
+	elif [[ -z $WP_VERSION ]]; then
+		WP_VERSION="latest"
+	fi
 
 	if [[ "$WP_MINOR_UPDATE" == "true" ]] && [[ "$WP_VERSION" != "latest" ]]; then
 		LATEST_MINOR_VERSION=$(\
