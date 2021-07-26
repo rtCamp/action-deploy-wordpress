@@ -33,7 +33,7 @@ jobs:
 ```
 
 3. Create `SSH_PRIVATE_KEY` secret using [GitHub Action's Secret](https://developer.github.com/actions/creating-workflows/storing-secrets) and store the private key that you use use to ssh to server(s) defined in `hosts.yml`.
-4. Create `.github/hosts.yml` inventory file, based on [Deployer inventory file](https://deployer.org/docs/hosts.html#inventory-file) format. Make sure you explictly define GitHub branch mapping. Only the GitHub branches mapped in `hosts.yml` will be deployed, rest will be filtered out. Here is a sample [hosts.yml](https://github.com/rtCamp/wordpress-skeleton/blob/master/.github/hosts.yml).
+4. Create `.github/hosts.yml` inventory file, based on [Deployer inventory file](https://deployer.org/docs/hosts.html#inventory-file) format. Make sure you explictly define GitHub branch mapping. Only the GitHub branches mapped in `hosts.yml` will be deployed, rest will be filtered out. Here is a sample [hosts.yml](https://github.com/rtCamp/wordpress-skeleton/blob/main/.github/hosts.yml).
 
 
 ## Environment Variables
