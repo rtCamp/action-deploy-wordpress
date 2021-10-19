@@ -76,7 +76,12 @@ task('cachetool:download', function () {
 desc('Reset opcache');
 task('opcache:reset', function () {
 
-	$ee_version = run('ee --version');
+	$ee_version = '';
+	try {
+		$ee_version = run('ee --version');
+	} catch(\Exception $e) {
+		echo 'Not using EasyEngine.';
+	}
 
 	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
 
@@ -98,7 +103,12 @@ task('opcache:reset', function () {
 desc('Upgrade WordPress DB');
 task('core_db:update', function () {
 
-	$ee_version = run('ee --version');
+	$ee_version = '';
+	try {
+		$ee_version = run('ee --version');
+	} catch(\Exception $e) {
+		echo 'Not using EasyEngine.';
+	}
 
 	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
 
@@ -128,8 +138,26 @@ task('wp:config', function () {
  */
 desc('Correct Permissions');
 task('permissions:set', function () {
-	$output = run('chown -R www-data:www-data {{deploy_path}}');
-	writeln('<info>' . $output . '</info>');
+
+	try {
+		$plesk_version = run('plesk version');
+	} catch(\Exception $e) {
+		echo 'Not using Plesk.';
+	}
+
+	if ( false !== strpos( $plesk_version, 'Plesk' ) ) {
+		$branch       = get('branch');
+		$hosts_parsed = yaml_parse_file("/hosts.yml");
+		$permission   = ($hosts_parsed[$branch]['permission']);
+
+		$output       = run("chown -R $permission {{deploy_path}}");
+		writeln('<info>' . $output . '</info>');
+		$output = run("chmod o-rwx {{deploy_path}}/current");
+		writeln('<info>' . $output . '</info>');
+	} else {
+		$output = run('chown -R www-data:www-data {{deploy_path}}');
+		writeln('<info>' . $output . '</info>');
+	}
 });
 
 /*   deployment task   */

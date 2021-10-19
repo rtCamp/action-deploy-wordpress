@@ -26,7 +26,7 @@ RUN apt update && \
 		software-properties-common && \
 		add-apt-repository ppa:ondrej/php && \
 		apt update && \
-		apt-get install -y php7.4-cli php7.4-curl php7.4-json php7.4-mbstring php7.4-xml php7.4-iconv && \
+		apt-get install -y php7.4-cli php7.4-curl php7.4-json php7.4-mbstring php7.4-xml php7.4-iconv php7.4-yaml && \
 		pip3 install shyaml && \
 		rm -rf /var/lib/apt/lists/*
 
