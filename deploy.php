@@ -69,7 +69,7 @@ set('rsync_dest', '{{release_path}}');
 /*  custom task defination    */
 desc('Download cachetool');
 task('cachetool:download', function () {
-	run('wget https://raw.githubusercontent.com/gordalina/cachetool/gh-pages/downloads/cachetool-3.0.0.phar -O {{release_path}}/cachetool.phar');
+	run('wget https://github.com/gordalina/cachetool/releases/latest/download/cachetool.phar -O {{release_path}}/cachetool.phar');
 });
 
 /*  custom task defination    */
