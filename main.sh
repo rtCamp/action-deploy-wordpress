@@ -6,6 +6,7 @@ export PROJECT_ROOT="$(pwd)"
 export HTDOCS="$HOME/htdocs"
 export GITHUB_BRANCH=${GITHUB_REF##*heads/}
 export CI_SCRIPT_OPTIONS="ci_script_options"
+CUSTOM_SCRIPT_DIR="$GITHUB_WORKSPACE/.github/deploy"
 
 function init_checks() {
 
@@ -16,7 +17,7 @@ function init_checks() {
 	fi
 
 	# Check for SSH key if jump host is defined
-	if [[ ! -z "$JUMPHOST_SERVER" ]]; then
+	if [[ -n "$JUMPHOST_SERVER" ]]; then
 
 		if [[ -z "$SSH_PRIVATE_KEY" ]]; then
 			echo "Jump host configuration does not work with vault ssh signing."
@@ -159,6 +160,38 @@ EOL
 	fi
 }
 
+function maybe_install_node_dep() {
+
+	if [[ -n "$NODE_VERSION" ]]; then
+
+		echo "Setting up $NODE_VERSION"
+		NVM_LATEST_VER=$(curl -s "https://api.github.com/repos/nvm-sh/nvm/releases/latest" |
+			grep '"tag_name":' |
+			sed -E 's/.*"([^"]+)".*/\1/') &&
+			curl -fsSL "https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_LATEST_VER/install.sh" | bash
+		export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+		[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+		nvm install "$NODE_VERSION"
+		nvm use "$NODE_VERSION"
+
+		[[ -z "$NPM_VERSION" ]] && NPM_VERSION="latest" || echo ''
+		export npm_install=$NPM_VERSION
+		curl -fsSL https://www.npmjs.com/install.sh | bash
+	fi
+}
+
+function maybe_run_node_build() {
+
+	[[ -n "$NODE_BUILD_DIRECTORY" ]] && cd "$NODE_BUILD_DIRECTORY"
+	[[ -n "$NODE_BUILD_COMMAND" ]] && eval "$NODE_BUILD_COMMAND"
+	if [[ -n "$NODE_BUILD_SCRIPT" ]]; then
+		cd "$GITHUB_WORKSPACE"
+		chmod +x "$NODE_BUILD_SCRIPT"
+		./"$NODE_BUILD_SCRIPT"
+	fi
+}
+
 function setup_wordpress_files() {
 
 	mkdir -p "$HTDOCS"
@@ -223,10 +256,13 @@ function deploy() {
 }
 
 function main() {
+
 	init_checks
 	setup_hosts_file
 	check_branch_in_hosts_file
 	setup_ssh_access
+	maybe_install_node_dep
+	maybe_run_node_build
 	maybe_install_submodules
 	setup_wordpress_files
 	deploy
