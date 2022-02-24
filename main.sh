@@ -258,14 +258,18 @@ function deploy() {
 function main() {
 
 	init_checks
-	setup_hosts_file
-	check_branch_in_hosts_file
-	setup_ssh_access
-	maybe_install_node_dep
-	maybe_run_node_build
-	maybe_install_submodules
-	setup_wordpress_files
-	deploy
+	if [[ -f "$CUSTOM_SCRIPT_DIR/deploy.sh" ]]; then
+		source "$CUSTOM_SCRIPT_DIR/deploy.sh"
+	else
+		setup_hosts_file
+		check_branch_in_hosts_file
+		setup_ssh_access
+		maybe_install_node_dep
+		maybe_run_node_build
+		maybe_install_submodules
+		setup_wordpress_files
+		deploy
+	fi
 }
 
 main
