@@ -168,25 +168,9 @@ task( 'wp:config', function () {
 desc( 'Correct Permissions' );
 task( 'permissions:set', function () {
 
-	try {
-		$plesk_version = run( 'plesk version' );
-	} catch ( \Exception $e ) {
-		echo 'Not using Plesk.';
-	}
+	$output = run( 'chown -R www-data:www-data {{deploy_path}}' );
+	writeln( '<info>' . $output . '</info>' );
 
-	if ( false !== strpos( $plesk_version, 'Plesk' ) ) {
-		$branch       = get( 'branch' );
-		$hosts_parsed = yaml_parse_file( "/hosts.yml" );
-		$permission   = ( $hosts_parsed[ $branch ]['permission'] );
-
-		$output = run( "chown -R $permission {{deploy_path}}" );
-		writeln( '<info>' . $output . '</info>' );
-		$output = run( "chmod o-rwx {{deploy_path}}/current" );
-		writeln( '<info>' . $output . '</info>' );
-	} else {
-		$output = run( 'chown -R www-data:www-data {{deploy_path}}' );
-		writeln( '<info>' . $output . '</info>' );
-	}
 } );
 
 /*   deployment task   */
