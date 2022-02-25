@@ -258,8 +258,8 @@ function deploy() {
 function main() {
 
 	init_checks
-	if [[ -f "$CUSTOM_SCRIPT_DIR/deploy.sh" ]]; then
-		source "$CUSTOM_SCRIPT_DIR/deploy.sh"
+	if [[ -f "$CUSTOM_SCRIPT_DIR/addon.sh" ]]; then
+		source "$CUSTOM_SCRIPT_DIR/addon.sh"
 	else
 		setup_hosts_file
 		check_branch_in_hosts_file
