@@ -151,13 +151,20 @@ systemctl restart ssh
 
 ## Overriding default deployement behavior
 
-Create a file at location `.github/deploy/deploy.php` in your git repo to provide your
-own [Deployer.org](https://deployer.org/) script.
-
-Please note that it will completely override this
-action's [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php). So if you need
-some portion of [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php), you
-need to copy that to your own `.github/deploy/deploy.php`.
+1. If you would like to completely override this actions deployer recipe. Create a file at
+   location `.github/deploy/deploy.php` in your git repository to provide your own [Deployer.org](https://deployer.org/)
+   script.
+    * Please note that it will completely override this
+      action's [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php). So if
+      you need some portion
+      of [original deploy.php](https://github.com/rtCamp/action-deploy-wordpress/blob/master/deploy.php), you need to
+      copy that to your own `.github/deploy/deploy.php`.
+2. If you need to add one or a few custom tasks on top of this actions `deploy.php`, you can create a file at
+   location `.github/deploy/addon.php` in your git repository. Checkout the [example addon.php](./example/addon.php) to
+   see how to customize it.
+3. If you need to modify the `main.sh` shell script of this action, you can create a file at
+   location `.github/deploy/addon.sh` in your git repository. Checkout the [example addon.sh](./example/addon.sh) to see
+   how to customize.
 
 ## License
 
