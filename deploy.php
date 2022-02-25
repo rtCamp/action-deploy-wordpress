@@ -173,9 +173,7 @@ task( 'permissions:set', function () {
 
 } );
 
-/*   deployment task   */
-desc( 'Deploy the project' );
-task( 'deploy', [
+$wp_tasks = [
 	'deploy:prepare',
 	'deploy:unlock',
 	'deploy:lock',
@@ -190,5 +188,32 @@ task( 'deploy', [
 	'core_db:update',
 	'deploy:unlock',
 	'cleanup',
-] );
+];
+
+$non_wp_tasks = [
+	'deploy:prepare',
+	'deploy:unlock',
+	'deploy:lock',
+	'deploy:release',
+	'rsync',
+	'deploy:shared',
+	'deploy:symlink',
+	'deploy:unlock',
+	'cleanup',
+];
+
+if ( 'true' === getenv( 'SKIP_WP_TASKS' ) ) {
+	$tasks = $non_wp_tasks;
+} else {
+	$tasks = $wp_tasks;
+}
+
+$addon_recipe = getenv( 'GITHUB_WORKSPACE' ) . '/.github/deploy/addon.php';
+if ( file_exists( $addon_recipe ) ) {
+	require $addon_recipe;
+}
+
+/*   deployment task   */
+desc( 'Deploy the project' );
+task( 'deploy', $tasks );
 after( 'deploy', 'success' );
