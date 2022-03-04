@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
-        uses: rtCamp/action-deploy-wordpress@v2
+        uses: rtCamp/action-deploy-wordpress@v3
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 ```
@@ -122,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
-        uses: rtCamp/action-deploy-wordpress@v2
+        uses: rtCamp/action-deploy-wordpress@v3
         env:
           VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
@@ -168,7 +168,7 @@ systemctl restart ssh
 
 ## License
 
-[MIT](LICENSE) © 2021 rtCamp
+[MIT](LICENSE) © 2022 rtCamp
 
 ## Does this interest you?
 
