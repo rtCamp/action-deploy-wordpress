@@ -1,9 +1,6 @@
 {
     "require": {
-        "deployer/deployer": "^6.3.0",
-        "deployer/recipes": "^6.1.0",
-        "squizlabs/php_codesniffer": "~3.3.2",
-        "wp-cli/wp-cli-bundle": "~2.0",
-        "phpunit/phpunit": "^5.6"
+        "deployer/deployer": "^6.8",
+        "deployer/recipes": "^6.2"
     }
 }

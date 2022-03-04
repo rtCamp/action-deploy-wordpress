@@ -1,40 +1,41 @@
 <?php
+
 namespace Deployer;
 
-//adds common necessities for the deployment
+// adds common necessities for the deployment.
 require 'recipe/common.php';
 
-set('ssh_type', 'native');
-set('ssh_multiplexing', true);
+set( 'ssh_type', 'native' );
+set( 'ssh_multiplexing', true );
 
-if (file_exists('vendor/deployer/recipes/recipe/rsync.php')) {
+if ( file_exists( 'vendor/deployer/recipes/recipe/rsync.php' ) ) {
 	require 'vendor/deployer/recipes/recipe/rsync.php';
 } else {
-	require getenv('COMPOSER_HOME') . '/vendor/deployer/recipes/recipe/rsync.php';
+	require getenv( 'COMPOSER_HOME' ) . '/vendor/deployer/recipes/recipe/rsync.php';
 }
 
-set('shared_dirs', ['wp-content/uploads']);
-set('writable_dirs', [
+set( 'shared_dirs', [ 'wp-content/uploads' ] );
+set( 'writable_dirs', [
 	'wp-content',
 	'wp-content/uploads',
-]);
-inventory('/hosts.yml');
+] );
+inventory( '/hosts.yml' );
 
 $deployer = Deployer::get();
-$hosts = $deployer->hosts;
+$hosts    = $deployer->hosts;
 
-foreach ($hosts as $host) {
+foreach ( $hosts as $host ) {
 	$host
-	->addSshOption('UserKnownHostsFile', '/dev/null')
-	->addSshOption('StrictHostKeyChecking', 'no');
+		->addSshOption( 'UserKnownHostsFile', '/dev/null' )
+		->addSshOption( 'StrictHostKeyChecking', 'no' );
 
-	$deployer->hosts->set($host->getHostname(), $host);
+	$deployer->hosts->set( $host->getHostname(), $host );
 }
 
-// Add tests and other directory uncessecary for
+// Add tests and other directory unnecessary things for
 // production to exclude block.
-set('rsync', [
-	'exclude'      => [
+set( 'rsync', [
+	'exclude'       => [
 		'.git',
 		'.github',
 		'deploy.php',
@@ -50,42 +51,69 @@ set('rsync', [
 		'.circleci',
 		'package-lock.json',
 		'package.json',
-		'phpcs.xml'
+		'phpcs.xml',
 	],
-	'exclude-file' => true,
-	'include'      => [],
-	'include-file' => false,
-	'filter'       => [],
-	'filter-file'  => false,
-	'filter-perdir'=> false,
-	'flags'        => 'rz', // Recursive, with compress
-	'options'      => [ 'delete', 'delete-excluded', 'links', 'no-perms', 'no-owner', 'no-group' ],
-	'timeout'      => 300,
-]);
-set('rsync_src', getenv('build_root'));
-set('rsync_dest', '{{release_path}}');
+	'exclude-file'  => true,
+	'include'       => [],
+	'include-file'  => false,
+	'filter'        => [],
+	'filter-file'   => false,
+	'filter-perdir' => false,
+	'flags'         => 'rz', // Recursive, with compress
+	'options'       => [ 'delete', 'delete-excluded', 'links', 'no-perms', 'no-owner', 'no-group' ],
+	'timeout'       => 300,
+] );
+
+set( 'rsync_src', getenv( 'build_root' ) );
+set( 'rsync_dest', '{{release_path}}' );
 
 
 /*  custom task defination    */
-desc('Download cachetool');
-task('cachetool:download', function () {
-	run('wget https://github.com/gordalina/cachetool/releases/latest/download/cachetool.phar -O {{release_path}}/cachetool.phar');
-});
+desc( 'Download cachetool' );
+task( 'cachetool:download', function () {
+
+	$php_version = getenv( 'PHP_VERSION' );
+	if ( empty( $php_version ) ) {
+		$ee_version = '';
+		try {
+			$ee_version = run( 'ee --version' );
+		} catch ( \Exception $e ) {
+			echo 'Not using EasyEngine.';
+		}
+
+		if ( false !== strpos( $ee_version, 'EE 4' ) ) {
+			try {
+				$php_version = run( 'cd {{deploy_path}} && ee shell --command="php -r \'echo PHP_MAJOR_VERSION;\'" --skip-tty' );
+			} catch ( \Exception $e ) {
+				echo 'Could not determine PHP version. Use `PHP_VERSION` env variable to specify the version.';
+				echo 'Falling back to version 7.4 as default';
+				$php_version = 7.4;
+			}
+		}
+	}
+
+	if ( $php_version < 8 ) {
+		# Using 5.x for PHP >=7.2 compatibility
+		run( 'wget https://github.com/gordalina/cachetool/releases/download/5.1.3/cachetool.phar -O {{release_path}}/cachetool.phar' );
+	} else {
+		run( 'wget https://github.com/gordalina/cachetool/releases/download/8.4.0/cachetool.phar -O {{release_path}}/cachetool.phar' );
+	}
+} );
 
 /*  custom task defination    */
-desc('Reset opcache');
-task('opcache:reset', function () {
+desc( 'Reset opcache' );
+task( 'opcache:reset', function () {
 
 	$ee_version = '';
 	try {
-		$ee_version = run('ee --version');
-	} catch(\Exception $e) {
+		$ee_version = run( 'ee --version' );
+	} catch ( \Exception $e ) {
 		echo 'Not using EasyEngine.';
 	}
 
 	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
 
-		$output = run('php {{release_path}}/cachetool.phar opcache:reset --fcgi=127.0.0.1:9070');
+		$output = run( 'php {{release_path}}/cachetool.phar opcache:reset --fcgi=127.0.0.1:9070' );
 
 	} elseif ( false !== strpos( $ee_version, 'EE 4' ) ) {
 
@@ -96,23 +124,23 @@ task('opcache:reset', function () {
 		echo 'Skipping opcache reset as EasyEnigne is not installed.';
 	}
 
-	writeln('<info>' . $output . '</info>');
+	writeln( '<info>' . $output . '</info>' );
 
-});
+} );
 
-desc('Upgrade WordPress DB');
-task('core_db:update', function () {
+desc( 'Upgrade WordPress DB' );
+task( 'core_db:update', function () {
 
 	$ee_version = '';
 	try {
-		$ee_version = run('ee --version');
-	} catch(\Exception $e) {
+		$ee_version = run( 'ee --version' );
+	} catch ( \Exception $e ) {
 		echo 'Not using EasyEngine.';
 	}
 
 	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
 
-		$output = run('cd {{release_path}} && wp core update-db');
+		$output = run( 'cd {{release_path}} && wp core update-db' );
 
 	} elseif ( false !== strpos( $ee_version, 'EE 4' ) ) {
 
@@ -123,46 +151,29 @@ task('core_db:update', function () {
 		echo 'Skipping WordPress db core update as EasyEnigne is not installed.';
 	}
 
-	writeln('<info>' . $output . '</info>');
+	writeln( '<info>' . $output . '</info>' );
 
-});
+} );
 
-desc('Symlink wp-config.php');
-task('wp:config', function () {
-	run('[ ! -f {{release_path}}/../wp-config.php ] && cd {{release_path}}/../ && ln -sn ../wp-config.php && echo "Created Symlink for wp-config.php." || echo ""');
-});
+desc( 'Symlink wp-config.php' );
+task( 'wp:config', function () {
+
+	run( '[ ! -f {{release_path}}/../wp-config.php ] && cd {{release_path}}/../ && ln -sn ../wp-config.php && echo "Created Symlink for wp-config.php." || echo ""' );
+} );
 
 /*
  * Change permissions to 'www-data' for 'current/',
  * so that 'wp-cli' can read/write files.
  */
-desc('Correct Permissions');
-task('permissions:set', function () {
+desc( 'Correct Permissions' );
+task( 'permissions:set', function () {
 
-	try {
-		$plesk_version = run('plesk version');
-	} catch(\Exception $e) {
-		echo 'Not using Plesk.';
-	}
+	$output = run( 'chown -R www-data:www-data {{deploy_path}}' );
+	writeln( '<info>' . $output . '</info>' );
 
-	if ( false !== strpos( $plesk_version, 'Plesk' ) ) {
-		$branch       = get('branch');
-		$hosts_parsed = yaml_parse_file("/hosts.yml");
-		$permission   = ($hosts_parsed[$branch]['permission']);
+} );
 
-		$output       = run("chown -R $permission {{deploy_path}}");
-		writeln('<info>' . $output . '</info>');
-		$output = run("chmod o-rwx {{deploy_path}}/current");
-		writeln('<info>' . $output . '</info>');
-	} else {
-		$output = run('chown -R www-data:www-data {{deploy_path}}');
-		writeln('<info>' . $output . '</info>');
-	}
-});
-
-/*   deployment task   */
-desc('Deploy the project');
-task('deploy', [
+$wp_tasks = [
 	'deploy:prepare',
 	'deploy:unlock',
 	'deploy:lock',
@@ -176,6 +187,33 @@ task('deploy', [
 	'opcache:reset',
 	'core_db:update',
 	'deploy:unlock',
-	'cleanup'
-]);
-after('deploy', 'success');
+	'cleanup',
+];
+
+$non_wp_tasks = [
+	'deploy:prepare',
+	'deploy:unlock',
+	'deploy:lock',
+	'deploy:release',
+	'rsync',
+	'deploy:shared',
+	'deploy:symlink',
+	'deploy:unlock',
+	'cleanup',
+];
+
+if ( 'true' === getenv( 'SKIP_WP_TASKS' ) ) {
+	$tasks = $non_wp_tasks;
+} else {
+	$tasks = $wp_tasks;
+}
+
+$addon_recipe = getenv( 'GITHUB_WORKSPACE' ) . '/.github/deploy/addon.php';
+if ( file_exists( $addon_recipe ) ) {
+	require $addon_recipe;
+}
+
+/*   deployment task   */
+desc( 'Deploy the project' );
+task( 'deploy', $tasks );
+after( 'deploy', 'success' );
