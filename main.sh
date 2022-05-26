@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit on error
+set -e
+
 hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 export PROJECT_ROOT="$(pwd)"
@@ -198,7 +201,7 @@ function setup_wordpress_files() {
 	cd "$HTDOCS"
 	export build_root="$(pwd)"
 
-	hosts_wp_version=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.WP_VERSION" 2>/dev/null)
+	hosts_wp_version=$(cat "$hosts_file" | shyaml get-value "$GITHUB_BRANCH.WP_VERSION" || true)
 
 	# Check if WP_VERSION is already defined in hosts.yml
 	# Priority: 1. hosts.yml, 2. workflow file, else use latest
