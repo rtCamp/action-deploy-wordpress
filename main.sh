@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit on error
+set -e
+
 hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
 export PROJECT_ROOT="$(pwd)"
