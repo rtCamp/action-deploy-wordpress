@@ -138,6 +138,9 @@ function setup_ssh_access() {
 
 function maybe_install_submodules() {
 
+	# Change directory ownership to container user due to issue https://github.com/actions/checkout/issues/760
+	# This will be changed to www-data or similar on deployment by deployer.
+	chown -R root: "$GITHUB_WORKSPACE"
 	# Check and update submodules if any
 	if [[ -f "$GITHUB_WORKSPACE/.gitmodules" ]]; then
 		# add github's public key
