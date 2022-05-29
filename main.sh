@@ -164,6 +164,9 @@ ${identity_file}
 EOL
 		git submodule update --init --recursive
 	fi
+
+	# Change directory ownership to action user due to issue - https://github.com/rtCamp/action-deploy-wordpress/issues/37
+	chown -R actions:actions $GITHUB_WORKSPACE
 }
 
 function maybe_install_node_dep() {

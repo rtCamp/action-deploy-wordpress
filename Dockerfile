@@ -50,4 +50,6 @@ COPY deploy.php hosts.yml /
 COPY *.sh /
 RUN chmod +x /*.sh
 
+RUN useradd actions
+
 ENTRYPOINT ["/entrypoint.sh"]
