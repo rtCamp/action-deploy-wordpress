@@ -144,7 +144,7 @@ function maybe_install_submodules() {
 	# Check and update submodules if any
 	if [[ -f "$GITHUB_WORKSPACE/.gitmodules" ]]; then
 		# add github's public key
-		curl -sL https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
+		curl -sL https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >>/etc/ssh/known_hosts
 
 		identity_file=''
 		if [[ -n "$SUBMODULE_DEPLOY_KEY" ]]; then
