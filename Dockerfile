@@ -46,7 +46,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash && \
 	apt install -y nodejs && \
 	rm -rf /var/lib/apt/lists/*
 
-COPY deploy.php hosts.yml /
+COPY deploy.php hosts.yml 000-block-emails.php /
 COPY *.sh /
 RUN chmod +x /*.sh
 

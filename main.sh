@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Exit on error
-set -e
+set -ex
 
 hosts_file="$GITHUB_WORKSPACE/.github/hosts.yml"
 export PATH="$PATH:$COMPOSER_HOME/vendor/bin"
@@ -266,6 +266,59 @@ function deploy() {
 	dep deploy "$GITHUB_BRANCH"
 }
 
+function block_emails() {
+
+	hosts_block_email=$(shyaml get-value "$GITHUB_BRANCH.block_emails" < "$hosts_file" 2>/dev/null || exit 0)
+
+	if [[ -n "$hosts_block_email" ]]; then
+		BLOCK_EMAILS="$hosts_block_email"
+	fi
+
+	if [[ -n "$BLOCK_EMAILS" ]]; then
+
+		# priority: 1. hosts.yml 2. vip 3. WP
+		echo -e "\033[34mSETUP EMAIL BLOCKING\033[0m"
+		if [[ -d "$HTDOCS/wp-content/client-mu-plugins" ]]; then
+		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/client-mu-plugins"
+		elif [[ -d "$HTDOCS/wp-content/mu-plugins" ]]; then
+		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/mu-plugins"
+		fi
+
+		hosts_block_email_dir=$(shyaml get-value "$GITHUB_BRANCH.block_emails_plugin_path" < "$hosts_file" 2>/dev/null || exit 0)
+
+		if [[ -n "$hosts_block_email_dir" ]]; then
+			BLOCK_EMAIL_DIR="$HTDOCS/wp-content/$hosts_block_email_dir"
+		elif [[ -n "$BLOCK_EMAILS_PLUGIN_PATH" ]]; then
+			BLOCK_EMAIL_DIR="$HTDOCS/wp-content/$BLOCK_EMAILS_PLUGIN_PATH"
+		fi
+
+		BLOCK_EMAIL_DIR="${BLOCK_EMAIL_DIR%/}"
+
+		# using this naming convention by default to load this plugin first in mu-plugin loading phase.
+		BLOCK_EMAIL_PLUGIN_NAME="000-block-emails.php"
+
+		hosts_block_email_file_name=$(shyaml get-value "$GITHUB_BRANCH.block_emails_plugin_file_name" < "$hosts_file" 2>/dev/null || exit 0)
+
+		if [[ -n "$hosts_block_email_file_name" ]]; then
+			BLOCK_EMAIL_PLUGIN_NAME="${hosts_block_email_file_name}.php"
+		elif [[ -n "$BLOCK_EMAILS_PLUGIN_FILE_NAME" ]]; then
+			BLOCK_EMAIL_PLUGIN_NAME="${BLOCK_EMAILS_PLUGIN_FILE_NAME}.php"
+		fi
+
+		BLOCK_EMAIL_PLUGIN_PATH="$BLOCK_EMAIL_DIR/$BLOCK_EMAIL_PLUGIN_NAME"
+
+		if [[ -d "$BLOCK_EMAIL_DIR" ]]; then
+			rsync -av  "/000-block-emails.php" "$BLOCK_EMAIL_PLUGIN_PATH"
+		echo -e "\033[34mEMAIL BLOCK [Activated]: $BLOCK_EMAIL_PLUGIN_PATH \033[0m"
+		   else
+		echo -e "\033[31mEMAIL BLOCK [PATH ERROR]: $BLOCK_EMAIL_DIR doesn't exist.\033[0m"
+
+		fi
+	fi
+
+}
+
+
 function main() {
 
 	init_checks
@@ -279,6 +332,7 @@ function main() {
 		maybe_run_node_build
 		maybe_install_submodules
 		setup_wordpress_files
+		block_emails
 		deploy
 	fi
 }
