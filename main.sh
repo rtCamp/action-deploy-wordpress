@@ -278,20 +278,21 @@ function block_emails() {
 
 		# priority: 1. hosts.yml 2. vip 3. WP
 		echo -e "\033[34mSETUP EMAIL BLOCKING\033[0m"
-		if [[ -d "$HTDOCS/wp-content/client-mu-plugins" ]]; then
-		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/client-mu-plugins"
-		elif [[ -d "$HTDOCS/wp-content/mu-plugins" ]]; then
-		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/mu-plugins"
-		fi
 
 		hosts_block_email_dir=$(shyaml get-value "$GITHUB_BRANCH.block_emails_plugin_path" < "$hosts_file" 2>/dev/null || exit 0)
 
 		if [[ -n "$hosts_block_email_dir" ]]; then
 			BLOCK_EMAIL_DIR="$HTDOCS/wp-content/$hosts_block_email_dir"
-		elif [[ -n "$BLOCK_EMAILS_PLUGIN_PATH" ]]; then
-			BLOCK_EMAIL_DIR="$HTDOCS/wp-content/$BLOCK_EMAILS_PLUGIN_PATH"
+		elif [[ -d "$HTDOCS/wp-content/client-mu-plugins" ]]; then
+		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/client-mu-plugins"
+		elif [[ -d "$HTDOCS/wp-content/mu-plugins" ]]; then
+		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/mu-plugins"
+		else
+		   BLOCK_EMAIL_DIR="$HTDOCS/wp-content/mu-plugins"
+		   mkdir -p "$BLOCK_EMAIL_DIR"
 		fi
 
+		# remove traling slash
 		BLOCK_EMAIL_DIR="${BLOCK_EMAIL_DIR%/}"
 
 		# using this naming convention by default to load this plugin first in mu-plugin loading phase.
@@ -309,7 +310,7 @@ function block_emails() {
 
 		if [[ -d "$BLOCK_EMAIL_DIR" ]]; then
 			rsync -av  "/000-block-emails.php" "$BLOCK_EMAIL_PLUGIN_PATH"
-		echo -e "\033[34mEMAIL BLOCK [Activated]: $BLOCK_EMAIL_PLUGIN_PATH \033[0m"
+		echo -e "\033[34mEMAIL BLOCK [ACTIVATED]: $BLOCK_EMAIL_PLUGIN_PATH \033[0m"
 		   else
 		echo -e "\033[31mEMAIL BLOCK [PATH ERROR]: $BLOCK_EMAIL_DIR doesn't exist.\033[0m"
 
