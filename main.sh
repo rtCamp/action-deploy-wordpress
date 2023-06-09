@@ -302,8 +302,6 @@ function block_emails() {
 
 		if [[ -n "$hosts_block_email_file_name" ]]; then
 			BLOCK_EMAIL_PLUGIN_NAME="${hosts_block_email_file_name}.php"
-		elif [[ -n "$BLOCK_EMAILS_PLUGIN_FILE_NAME" ]]; then
-			BLOCK_EMAIL_PLUGIN_NAME="${BLOCK_EMAILS_PLUGIN_FILE_NAME}.php"
 		fi
 
 		BLOCK_EMAIL_PLUGIN_PATH="$BLOCK_EMAIL_DIR/$BLOCK_EMAIL_PLUGIN_NAME"
