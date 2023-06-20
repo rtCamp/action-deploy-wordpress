@@ -48,7 +48,7 @@ jobs:
 
 ## Inventory file Variables
 
-### Mandatory Variables
+### Mandatory
 
 | Variable      | Default | Possible Values                                                | Purpose                        |
 |---------------|---------|----------------------------------------------------------------|--------------------------------|
