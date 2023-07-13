@@ -270,26 +270,14 @@ function block_emails() {
 
 	hosts_block_email=$(shyaml get-value "$GITHUB_BRANCH.block_emails" < "$hosts_file" 2>/dev/null || exit 0)
 
-	# priority: hosts.yml > workflow
 	if [[ -n "$hosts_block_email" ]]; then
-
 		match_hosts_block_email=$(echo "$hosts_block_email" | awk '{$1=$1;print tolower($0)}')
-
-		if [[ "${match_hosts_block_email}" == 'true' ]]; then
-			BLOCK_EMAILS="$hosts_block_email"
-		else
-			BLOCK_EMAILS=''
-		fi
 	fi
 
-	if [[ -n "$BLOCK_EMAILS" ]]; then
-		MATCH_BLOCK_EMAIL=$(echo "$BLOCK_EMAILS" | awk '{$1=$1;print tolower($0)}')
-	fi
-
-	if [[ "$MATCH_BLOCK_EMAIL" == 'true' ]]; then
+	if [[ "$match_hosts_block_email" == 'true' ]]; then
 
 		# priority: 1. hosts.yml 2. vip 3. WP
-		echo -e "\033[34mSETUP EMAIL BLOCKING\033[0m"
+		echo -e "\033[34mSETTING UP EMAIL BLOCKING\033[0m"
 
 		hosts_block_email_dir=$(shyaml get-value "$GITHUB_BRANCH.block_emails_plugin_path" < "$hosts_file" 2>/dev/null || exit 0)
 
