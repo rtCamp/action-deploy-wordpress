@@ -46,7 +46,6 @@ set( 'rsync', [
 		'.gitlab-ci.yml',
 		'Gruntfile.js',
 		'package.json',
-		'README.md',
 		'gulpfile.js',
 		'.circleci',
 		'package-lock.json',
