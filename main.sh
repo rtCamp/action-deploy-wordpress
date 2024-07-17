@@ -143,6 +143,10 @@ function maybe_install_submodules() {
 		# Change directory ownership to container user due to issue https://github.com/actions/checkout/issues/760
 		# This will be changed to www-data or similar on deployment by deployer.
 		git config --global --add safe.directory "$GITHUB_WORKSPACE"
+		submodule_paths=$(grep path .gitmodules | awk '{print $3}')
+		for path in $submodule_paths; do
+			git config --global --add safe.directory "$GITHUB_WORKSPACE/$path"
+		done
 
 		# add github's public key
 		curl -sL https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >>/etc/ssh/known_hosts
