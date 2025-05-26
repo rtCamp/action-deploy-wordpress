@@ -203,6 +203,41 @@ function maybe_run_node_build() {
 	fi
 }
 
+function maybe_install_php_dep() {
+
+	VALID_PHP_VERSIONS=("7.4" "8.0" "8.1" "8.2" "8.3" "8.4")
+	if [[ -z "$PHP_VERSION" ]]; then
+		echo "No PHP version specified. Skipping PHP setup."
+		return
+	fi
+
+	if [[ ! " ${VALID_PHP_VERSIONS[@]} " =~ " ${PHP_VERSION} " ]]; then
+		echo "Invalid PHP version specified: $PHP_VERSION"
+		echo "Valid versions are: ${VALID_PHP_VERSIONS[*]}"
+		exit 1
+	fi
+
+	apt install -y software-properties-common && \
+	add-apt-repository ppa:ondrej/php && \
+	apt update && \
+	apt-get install -y php"$PHP_VERSION"-cli php"$PHP_VERSION"-curl php"$PHP_VERSION"-mbstring php"$PHP_VERSION"-xml php"$PHP_VERSION"-iconv php"$PHP_VERSION"-yaml
+
+	update-alternatives --set php /usr/bin/php${PHP_VERSION}
+}
+
+function maybe_run_php_build() {
+
+	[[ -n "$PHP_BUILD_DIRECTORY" ]] && cd "$PHP_BUILD_DIRECTORY"
+	[[ -n "$PHP_BUILD_COMMAND" ]] && eval "$PHP_BUILD_COMMAND"
+
+	if [[ -n "$PHP_BUILD_SCRIPT" ]]; then
+		chmod +x "$PHP_BUILD_SCRIPT"
+		./"$PHP_BUILD_SCRIPT"
+	fi
+
+	update-alternatives --set php /usr/bin/php${DEFAULT_PHP_VERSION}
+}
+
 function setup_wordpress_files() {
 
 	mkdir -p "$HTDOCS"
@@ -332,9 +367,11 @@ function main() {
 		setup_hosts_file
 		check_branch_in_hosts_file
 		setup_ssh_access
+		maybe_install_submodules
 		maybe_install_node_dep
 		maybe_run_node_build
-		maybe_install_submodules
+		maybe_install_php_dep
+		maybe_run_php_build
 		setup_wordpress_files
 		block_emails
 		deploy
