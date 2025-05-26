@@ -217,6 +217,7 @@ function maybe_install_php_dep() {
 		exit 1
 	fi
 
+	git config --global --add safe.directory "$GITHUB_WORKSPACE"
 	apt install -y software-properties-common && \
 	add-apt-repository ppa:ondrej/php && \
 	apt update && \
