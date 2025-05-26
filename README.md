@@ -85,8 +85,49 @@ This GitHub action's behavior can be customized using following environment vari
 | `NODE_BUILD_DIRECTORY` | null    | path to valid directory on repository.                              | Build directory. Generally root directory or directory like frontend.                                                                                                                                                                                                                                                  |
 | `NODE_BUILD_COMMAND`   | null    | `npm run build` or similar command.                                 | Command used to to build the dependencies needed on deployment.                                                                                                                                                                                                                                                        |
 | `NODE_BUILD_SCRIPT`    | null    | path to valid shell script                                          | Custom or predefined script to run after compilation.                                                                                                                                                                                                                                                                  |
+| `PHP_BUILD_DIRECTORY`  | null    | Path to valid directory                 | Directory to run PHP build commands/scripts in.                                                  |
+| `PHP_BUILD_COMMAND`    | null    | Any shell command                       | Command to run for building PHP dependencies or other PHP build steps.                           |
+| `PHP_BUILD_SCRIPT`     | null    | Path to valid shell script              | Custom or predefined script to run for PHP build steps.                                          |
 
-All node related variables are completely optional. You can use them if your site needs to have node dependencies built.
+All node and php related variables are completely optional. You can use them if your site needs to have such dependencies built.
+
+### PHP Build Support
+
+You can now run custom PHP build steps before deployment by setting the following environment variables in your workflow:
+
+```yaml
+env:
+  PHP_VERSION: "8.1"
+  PHP_BUILD_DIRECTORY: "./"
+  PHP_BUILD_COMMAND: "composer install --no-dev"
+  PHP_BUILD_SCRIPT: "./scripts/php-build.sh"
+```
+
+- `PHP_VERSION`: Installs the specified PHP version before running build steps.
+- `PHP_BUILD_DIRECTORY`: Directory to change into before running build commands/scripts.
+- `PHP_BUILD_COMMAND`: Shell command to run for PHP build (e.g., `composer install`).
+- `PHP_BUILD_SCRIPT`: Path to a shell script to execute for PHP build steps.
+
+### Node Build Support
+
+You can also run custom Node.js build steps before deployment by setting the following environment variables in your workflow:
+
+```yaml
+env:
+  NODE_VERSION: "20"
+  NPM_VERSION: "10"
+  NODE_BUILD_DIRECTORY: "./frontend"
+  NODE_BUILD_COMMAND: "npm run build"
+  NODE_BUILD_SCRIPT: "./scripts/node-build.sh"
+```
+
+- `NODE_VERSION`: Installs the specified Node.js version before running build steps.
+- `NPM_VERSION`: Installs the specified npm version (defaults to latest if not set).
+- `NODE_BUILD_DIRECTORY`: Directory to change into before running build commands/scripts.
+- `NODE_BUILD_COMMAND`: Shell command to run for Node.js build (e.g., `npm run build`).
+- `NODE_BUILD_SCRIPT`: Path to a shell script to execute for Node.js build steps.
+
+These steps will be executed before PHP build steps.
 
 ## Server Setup
 
