@@ -1,7 +1,6 @@
 FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DEFAULT_PHP_VERSION=7.4
 
 LABEL "com.github.actions.icon"="upload-cloud"
 LABEL "com.github.actions.color"="yellow"
@@ -10,9 +9,10 @@ LABEL "com.github.actions.description"="Deploy WordPress code to a server"
 LABEL "org.opencontainers.image.source"="https://github.com/rtCamp/action-deploy-wordpress"
 
 
-ENV PATH                     "/composer/vendor/bin:~/.local/bin:$PATH"
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME            /composer
+ENV PATH="/composer/vendor/bin:~/.local/bin:$PATH"
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_HOME=/composer
+ENV DEFAULT_PHP_VERSION=7.4
 
 RUN apt update && \
 	apt install -y \
@@ -28,7 +28,7 @@ RUN apt update && \
 		add-apt-repository ppa:ondrej/php && \
 		apt update && \
 		apt-get install -y php7.4-cli php7.4-curl php7.4-json php7.4-mbstring php7.4-xml php7.4-iconv php7.4-yaml && \
-		pip3 install shyaml && \
+		pip3 install shyaml --break-system-packages && \
 		rm -rf /var/lib/apt/lists/*
 
 # Setup wp-cli
