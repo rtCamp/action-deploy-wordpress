@@ -22,7 +22,6 @@ jobs:
         body: |
           ## What's Changed
 
-          **Changelog:**
         draft: true  # Creates a Draft Release
         name: ${{ env.release_name }}
         generate_release_notes: true
