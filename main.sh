@@ -205,7 +205,7 @@ function maybe_run_node_build() {
 
 function maybe_install_php_dep() {
 
-	VALID_PHP_VERSIONS=("7.4" "8.0" "8.1" "8.2" "8.3" "8.4")
+	VALID_PHP_VERSIONS=("7.4" "8.0" "8.1" "8.2" "8.3" "8.4" "8.5")
 	if [[ -z "$PHP_VERSION" ]]; then
 		echo "No PHP version specified. Skipping PHP setup."
 		return
