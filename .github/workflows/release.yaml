@@ -3,6 +3,10 @@ on:
     tags:
       - "v*"
 name: Release Creation
+
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Create a Draft Release on GitHub
