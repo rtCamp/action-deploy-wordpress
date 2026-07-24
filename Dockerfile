@@ -12,7 +12,7 @@ LABEL "org.opencontainers.image.source"="https://github.com/rtCamp/action-deploy
 ENV PATH="/composer/vendor/bin:~/.local/bin:$PATH"
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_HOME=/composer
-ENV DEFAULT_PHP_VERSION=7.4
+ENV DEFAULT_PHP_VERSION=8.4
 
 RUN apt update && \
 	apt install -y \
@@ -27,7 +27,7 @@ RUN apt update && \
 		software-properties-common && \
 		add-apt-repository ppa:ondrej/php && \
 		apt update && \
-		apt-get install -y php7.4-cli php7.4-curl php7.4-json php7.4-mbstring php7.4-xml php7.4-iconv php7.4-yaml && \
+		apt-get install -y php8.4-cli php8.4-curl php8.4-mbstring php8.4-xml php8.4-iconv php8.4-yaml && \
 		pip3 install shyaml --break-system-packages && \
 		rm -rf /var/lib/apt/lists/*
 
