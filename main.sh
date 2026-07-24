@@ -44,7 +44,8 @@ function setup_hosts_file() {
 	# 'remote_user' (Deployer 6's inventory() accepted flat branch keys and
 	# 'user'). Consumer repos keep the v6-era flat format; transform it here
 	# so nothing downstream has to change. A file that already has a
-	# top-level 'hosts:' key is copied as-is.
+	# top-level 'hosts:' key is re-serialized unchanged (only the flat
+	# format is rewritten; comments and key order are not preserved).
 	python3 - "$hosts_file" >/hosts.yml <<-'PYEOF'
 	import sys, yaml
 

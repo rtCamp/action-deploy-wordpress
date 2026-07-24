@@ -28,7 +28,7 @@ RUN apt update && \
 		add-apt-repository ppa:ondrej/php && \
 		apt update && \
 		apt-get install -y php8.4-cli php8.4-curl php8.4-mbstring php8.4-xml php8.4-iconv php8.4-yaml && \
-		pip3 install shyaml --break-system-packages && \
+		pip3 install shyaml pyyaml --break-system-packages && \
 		rm -rf /var/lib/apt/lists/*
 
 # Setup wp-cli
