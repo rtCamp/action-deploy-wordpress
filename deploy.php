@@ -10,19 +10,18 @@ set( 'ssh_multiplexing', true );
 // server disk usage doesn't double for existing sites.
 set( 'keep_releases', 5 );
 
-// Deployer 7 numbers releases from .dep/latest_release, a file Deployer 6
-// never wrote. On a server previously deployed by v6 the numbered release
-// directories exist but the counter file does not, so v7 would start at "1"
-// and abort with "Release name already exists". Seed the counter from the
-// highest numbered directory already in releases/ instead.
+// Deployer 7 numbers releases from .dep/latest_release. Two states break a
+// naive read of that file: Deployer 6 never wrote it (existing v6 sites have
+// numbered release dirs but no counter), and a deploy that dies after mkdir
+// releases/N but before persisting the counter leaves it stale at N-1. Both
+// would collide on the next deploy with "Release name already exists", so
+// reconcile the counter against the highest numbered directory in releases/
+// and take whichever is greater.
 set( 'release_name', function () {
 	return within( '{{deploy_path}}', function () {
-		if ( test( '[ -f .dep/latest_release ]' ) ) {
-			$latest = run( 'cat .dep/latest_release' );
-		} else {
-			$latest = run( "ls -1 releases 2>/dev/null | grep -E '^[0-9]+$' | sort -n | tail -n 1 || echo 0" );
-		}
-		return strval( intval( $latest ) + 1 );
+		$counter = test( '[ -f .dep/latest_release ]' ) ? intval( run( 'cat .dep/latest_release' ) ) : 0;
+		$highest = intval( run( "ls -1 releases 2>/dev/null | grep -E '^[0-9]+$' | sort -n | tail -n 1 || echo 0" ) );
+		return strval( max( $counter, $highest ) + 1 );
 	} );
 } );
 set( 'ssh_arguments', [ '-o UserKnownHostsFile=/dev/null', '-o StrictHostKeyChecking=no' ] );
