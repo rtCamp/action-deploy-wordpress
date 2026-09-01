@@ -39,8 +39,31 @@ function init_checks() {
 
 function setup_hosts_file() {
 
-	# Setup hosts file
-	rsync -av "$hosts_file" /hosts.yml
+	# Deployer 7's import() validates hosts.yml against a strict schema:
+	# hosts must live under a top-level 'hosts:' key and the SSH user key is
+	# 'remote_user' (Deployer 6's inventory() accepted flat branch keys and
+	# 'user'). Consumer repos keep the v6-era flat format; transform it here
+	# so nothing downstream has to change. A file that already has a
+	# top-level 'hosts:' key is re-serialized unchanged (only the flat
+	# format is rewritten; comments and key order are not preserved).
+	python3 - "$hosts_file" >/hosts.yml <<-'PYEOF'
+	import sys, yaml
+
+	with open(sys.argv[1]) as f:
+	    data = yaml.safe_load(f) or {}
+
+	if 'hosts' not in data:
+	    hosts = {}
+	    for alias, cfg in data.items():
+	        cfg = dict(cfg or {})
+	        if 'user' in cfg:
+	            cfg['remote_user'] = cfg.pop('user')
+	        hosts[alias] = cfg
+	    data = {'hosts': hosts}
+
+	yaml.safe_dump(data, sys.stdout, default_flow_style=False)
+	PYEOF
+
 	cat /hosts.yml
 }
 
