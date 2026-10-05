@@ -269,9 +269,10 @@ function download_wordpress_core() {
 	fi
 	rm -rf "$tmp"
 
-	# Fail on missing or modified core files; only warn when WordPress.org checksums can't be fetched.
+	# Only a failure to fetch the checksums from WordPress.org is downgraded to a warning; anything else is fatal.
 	if ! out=$(wp core verify-checksums --allow-root 2>&1); then
-		if [[ "$out" == *"File doesn't exist:"* || "$out" == *"File doesn't verify against checksum:"* ]]; then
+		if [[ "$out" == *"File doesn't exist:"* || "$out" == *"File doesn't verify against checksum:"* ]] ||
+			! [[ "$out" == *"Couldn't get checksums"* || "$out" == *"api.wordpress.org"* || "$out" == *"Failed to decode JSON"* ]]; then
 			echo "$out" >&2
 			exit 1
 		fi
