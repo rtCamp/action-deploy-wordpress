@@ -239,6 +239,46 @@ function maybe_run_php_build() {
 	update-alternatives --set php /usr/bin/php${DEFAULT_PHP_VERSION}
 }
 
+# WP-CLI <= 2.12 extracts .tar.gz packages with PharData, which truncates paths longer than
+# 100 bytes in WordPress 7.x packages (wp-cli/wp-cli#6320). So WP-CLI only downloads and
+# md5-checks the package here, tar/unzip extract it, and checksums must verify afterwards.
+# Same approach as EasyEngine/site-command#504. WP-CLI >= 3.0 saves a .zip instead.
+function download_wordpress_core() {
+
+	local version="$1" tmp pkg out
+
+	# Nightly builds use WP-CLI's own .zip extraction and have no published checksums.
+	if [[ "$version" == "nightly" || "$version" == "trunk" ]]; then
+		wp core download --version="$version" --allow-root
+		return
+	fi
+
+	tmp=$(mktemp -d)
+	wp core download --no-extract --version="$version" --path="$tmp" --allow-root
+	pkg=$(find "$tmp" -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.tgz' -o -name '*.zip' \) | head -n 1)
+	if [[ -z "$pkg" ]]; then
+		echo "Error: WordPress package not found after download." >&2
+		exit 1
+	fi
+
+	if [[ "$pkg" == *.zip ]]; then
+		unzip -q "$pkg" -d "$tmp/x"
+		cp -R "$tmp/x/wordpress/." .
+	else
+		tar -xzf "$pkg" --no-same-owner --strip-components=1
+	fi
+	rm -rf "$tmp"
+
+	# Fail on missing or modified core files; only warn when WordPress.org checksums can't be fetched.
+	if ! out=$(wp core verify-checksums --allow-root 2>&1); then
+		if [[ "$out" == *"File doesn't exist:"* || "$out" == *"File doesn't verify against checksum:"* ]]; then
+			echo "$out" >&2
+			exit 1
+		fi
+		echo "Warning: Could not verify WordPress core checksums: $out" >&2
+	fi
+}
+
 function setup_wordpress_files() {
 
 	mkdir -p "$HTDOCS"
@@ -274,7 +314,7 @@ function setup_wordpress_files() {
 		fi
 	fi
 
-	wp core download --version="$WP_VERSION" --allow-root
+	download_wordpress_core "$WP_VERSION"
 
 	rm -r wp-content/
 
