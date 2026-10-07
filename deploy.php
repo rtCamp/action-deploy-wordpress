@@ -5,13 +5,31 @@ namespace Deployer;
 // adds common necessities for the deployment.
 require 'recipe/common.php';
 
-set( 'ssh_type', 'native' );
 set( 'ssh_multiplexing', true );
+// Deployer 7 raised the default from 5 to 10; keep the v6-era behavior so
+// server disk usage doesn't double for existing sites.
+set( 'keep_releases', 5 );
 
-if ( file_exists( 'vendor/deployer/recipes/recipe/rsync.php' ) ) {
-	require 'vendor/deployer/recipes/recipe/rsync.php';
+// Deployer 7 numbers releases from .dep/latest_release. Two states break a
+// naive read of that file: Deployer 6 never wrote it (existing v6 sites have
+// numbered release dirs but no counter), and a deploy that dies after mkdir
+// releases/N but before persisting the counter leaves it stale at N-1. Both
+// would collide on the next deploy with "Release name already exists", so
+// reconcile the counter against the highest numbered directory in releases/
+// and take whichever is greater.
+set( 'release_name', function () {
+	return within( '{{deploy_path}}', function () {
+		$counter = test( '[ -f .dep/latest_release ]' ) ? intval( run( 'cat .dep/latest_release' ) ) : 0;
+		$highest = intval( run( "ls -1 releases 2>/dev/null | grep -E '^[0-9]+$' | sort -n | tail -n 1 || echo 0" ) );
+		return strval( max( $counter, $highest ) + 1 );
+	} );
+} );
+set( 'ssh_arguments', [ '-o UserKnownHostsFile=/dev/null', '-o StrictHostKeyChecking=no' ] );
+
+if ( file_exists( 'vendor/deployer/deployer/contrib/rsync.php' ) ) {
+	require 'vendor/deployer/deployer/contrib/rsync.php';
 } else {
-	require getenv( 'COMPOSER_HOME' ) . '/vendor/deployer/recipes/recipe/rsync.php';
+	require getenv( 'COMPOSER_HOME' ) . '/vendor/deployer/deployer/contrib/rsync.php';
 }
 
 set( 'shared_dirs', [ 'wp-content/uploads' ] );
@@ -19,18 +37,7 @@ set( 'writable_dirs', [
 	'wp-content',
 	'wp-content/uploads',
 ] );
-inventory( '/hosts.yml' );
-
-$deployer = Deployer::get();
-$hosts    = $deployer->hosts;
-
-foreach ( $hosts as $host ) {
-	$host
-		->addSshOption( 'UserKnownHostsFile', '/dev/null' )
-		->addSshOption( 'StrictHostKeyChecking', 'no' );
-
-	$deployer->hosts->set( $host->getHostname(), $host );
-}
+import( '/hosts.yml' );
 
 // Add tests and other directory unnecessary things for
 // production to exclude block.
@@ -111,6 +118,7 @@ task( 'opcache:reset', function () {
 		echo 'Not using EasyEngine.';
 	}
 
+	$output = '';
 	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
 
 		$output = run( 'php {{release_path}}/cachetool.phar opcache:reset --fcgi=127.0.0.1:9070' );
@@ -138,6 +146,7 @@ task( 'core_db:update', function () {
 		echo 'Not using EasyEngine.';
 	}
 
+	$output = '';
 	if ( false !== strpos( $ee_version, 'EasyEngine v3' ) ) {
 
 		$output = run( 'cd {{release_path}} && wp core update-db' );
@@ -183,7 +192,12 @@ task( 'llms:link', function () {
 after( 'deploy:shared', 'llms:link' );
 
 $wp_tasks = [
-	'deploy:prepare',
+	// Deployer 7's deploy:prepare is a group task that runs deploy:update_code
+	// (fails without a 'repository' config — this action deploys via rsync)
+	// and duplicates lock/release/shared, so its sub-tasks are listed
+	// explicitly instead.
+	'deploy:info',
+	'deploy:setup',
 	'deploy:unlock',
 	'deploy:lock',
 	'deploy:release',
@@ -196,11 +210,12 @@ $wp_tasks = [
 	'opcache:reset',
 	'core_db:update',
 	'deploy:unlock',
-	'cleanup',
+	'deploy:cleanup',
 ];
 
 $non_wp_tasks = [
-	'deploy:prepare',
+	'deploy:info',
+	'deploy:setup',
 	'deploy:unlock',
 	'deploy:lock',
 	'deploy:release',
@@ -208,7 +223,7 @@ $non_wp_tasks = [
 	'deploy:shared',
 	'deploy:symlink',
 	'deploy:unlock',
-	'cleanup',
+	'deploy:cleanup',
 ];
 
 if ( 'true' === getenv( 'SKIP_WP_TASKS' ) ) {
@@ -225,4 +240,4 @@ if ( file_exists( $addon_recipe ) ) {
 /*   deployment task   */
 desc( 'Deploy the project' );
 task( 'deploy', $tasks );
-after( 'deploy', 'success' );
+after( 'deploy', 'deploy:success' );
